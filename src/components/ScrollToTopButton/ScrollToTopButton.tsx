@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { memo } from 'react';
+import { useState, useEffect, memo } from 'react';
 import './styles.css';
 
 /**
@@ -14,9 +14,42 @@ import './styles.css';
  *
  */
 function ScrollToTopButton() {
+  const [visible, setVisible] = useState(false);
+
+  const toggleButtonVisibility = (e: Event) => {
+    const target = e.target as HTMLElement
+    const scrolled = target.scrollTop
+    
+    if (scrolled > 200){
+      setVisible(true)
+    } 
+    else if (scrolled <= 200){
+      setVisible(false)
+    }
+  };
+
+  const scrollToTop = () =>{
+    document.body.scrollTo({
+      top: 0, 
+      behavior: 'smooth'
+    });
+  };
+
+  useEffect(() => {
+    document.body.addEventListener('scroll', toggleButtonVisibility);
+
+    return () => document.body.removeEventListener('scroll', toggleButtonVisibility);
+  });
+
   return (
     <div>
-      <button className="btn right-bottom-btn">Go to Top</button>
+      <button 
+        className="btn right-bottom-btn"
+        style={{display: visible ? 'inline' : 'none'}}
+        onClick={scrollToTop}
+      >
+        Go to Top
+      </button>
     </div>
   );
 }
