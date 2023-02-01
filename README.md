@@ -7,14 +7,14 @@ We have prepared a bunch of coding challenges for you, according to the position
 ## Challenges ##
 
 - [x] Local setup
-- [ ] Sticky Element
+- [x] Sticky Element
 - [ ] Fetch, Retry, Timeout
-- [ ] Using `stream.PassThrough`
+- [x] Using `stream.PassThrough`
 - [ ] RPC flow with RabbitMQ
 - [ ] Media Previwer
 - [ ] Basics of Redux
 - [ ] Css Media query usage
 - [ ] Switch Theme
-- [ ] Scroll to top
+- [x] Scroll to top
 - [ ] Connect wallet
 - [ ] Execute smart contract
