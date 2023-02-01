@@ -1,2 +1,7 @@
-.sidebar.sticky {
+@media (min-width:1025px) {
+    .sidebar.sticky {
+        position: sticky;
+        top: 120px;
+        align-self: flex-start;
+    }
 }
