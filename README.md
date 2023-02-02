@@ -12,9 +12,9 @@ We have prepared a bunch of coding challenges for you, according to the position
 - [x] Using `stream.PassThrough`
 - [ ] RPC flow with RabbitMQ
 - [ ] Media Previwer
-- [ ] Basics of Redux
+- [x] Basics of Redux
 - [ ] Css Media query usage
-- [ ] Switch Theme
+- [x] Switch Theme
 - [x] Scroll to top
 - [ ] Connect wallet
 - [ ] Execute smart contract
