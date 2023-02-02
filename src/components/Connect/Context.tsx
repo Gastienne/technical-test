@@ -2,7 +2,11 @@
 
 import { createContext, useContext, useCallback, useState, PropsWithChildren } from 'react';
 import { useRouter } from 'next/navigation';
-
+declare global {
+  interface Window {
+      ethereum: any;
+  }
+}
 export interface WalletContextValue {
   connected: boolean;
   account?: string;
@@ -24,20 +28,37 @@ export const WalletProvider = ({ children }: PropsWithChildren<WalletProviderPro
     connected: false,
   });
 
+  const getAccount = async () => {
+    const accounts = await window.ethereum.request({ 
+      method: 'wallet_requestPermissions', 
+      params: [{
+        eth_accounts: {},
+      }]
+    });
+    
+    const account = accounts[0];
+
+    return account;
+  }
+
   const connect = useCallback(async () => {
     if (state.connected) {
       Promise.resolve();
       return;
     }
 
-    // @todo: implement this flow
-    new Promise<void>((resolve, reject) => {
-      let confirmed = window.confirm('This function is among the challenges. Do you want to take it?');
+    new Promise<void>(async (resolve, reject) => {
 
-      if (confirmed) {
+      if (typeof window.ethereum === 'undefined') {
+        reject(new Error('MetaMask is not installed!'));
+      }
+
+      const account = await getAccount();
+
+      if (account) {
         resolve();
         router.push('/challenges/08-connect-wallet');
-        // setState({ connected: true, account: 'the wallet address here' });
+        setState({ connected: true, account });
       } else {
         reject(new Error('User rejected the connection'));
       }
@@ -51,7 +72,6 @@ export const WalletProvider = ({ children }: PropsWithChildren<WalletProviderPro
       return;
     }
 
-    // @todo: implement this flow
     setState({ connected: false });
   }, [state.connected]);
 
