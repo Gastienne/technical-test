@@ -1,6 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
+import { addTechItem } from '@/store/action';
+import { useDispatch, useSelector } from '@/store/helper';
+import { TechState } from '@/store/type';
 import { memo } from 'react';
 import './styles.css';
 
@@ -17,17 +20,18 @@ import './styles.css';
 
 const ItemList = () => {
 
-    const techs = ["HTML/CSS", "React", "VueJs", "NodeJs", "Typescript", "Java", "Python", "PHP", "Go", "C#"];
+    const techs = useSelector((state: TechState) => state.techs);
+    const dispatch = useDispatch();
 
     const addJsToTheList = () => {
-
+        dispatch(addTechItem('Javascript'));
     }
 
     return (
         <div>
             <ul>
                 {
-                    techs.map((tech) => <li key={`${tech.toLowerCase()}`} className="item">{tech}</li>)
+                    techs.map((tech: string) => <li key={`${tech.toLowerCase()}`} className="item">{tech}</li>)
                 }
             </ul>
             <button className='btn btn-add' onClick={addJsToTheList}>Add Javascript after NodeJs</button>
