@@ -5,6 +5,62 @@ interface FetchOptions extends RequestInit {
   // timeout in milliseconds to not exceed to receive a response from server
   timeout?: number;
 }
+class FetchError extends Error {
+  response: Response;
+
+  constructor(response: Response, message?: string) {
+    super(message);
+
+    this.response = response;
+  }
+
+  getResponse(): Response {
+    return this.response;
+  }
+}
+
+const fetchWithThrow = async (url: string, options: RequestInit) => {
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    throw new FetchError(response);
+  }
+
+  return response;
+}
+
+const fetchWithTimeout = async (url: string, options: RequestInit, timeout: number = 0) => {
+  if (! timeout) return [await fetchWithThrow(url, options), false];
+
+  let isAborted = false;
+  const abortController = new AbortController();
+
+  setTimeout(() => {
+    abortController.abort();
+    isAborted = true;
+  }, timeout);
+  
+  return [await fetchWithThrow(url, { ...options , ...(timeout && { signal: abortController.signal }) }), isAborted];
+}
+
+const fetchWithRetries = async (url: string, options: { maxRetries: number }, retryCount = 1): Promise<Response> => {
+  const { maxRetries = 1, ...remainingOptions } = options
+  let leftRetries = maxRetries - retryCount;
+  
+  console.log(`call ${url}, Left retries: ${leftRetries}`);
+
+  try {
+    return await fetchWithThrow(url, remainingOptions);
+  } catch (e) {
+    const error = e as FetchError
+
+    if (retryCount < maxRetries) {
+      return fetchWithRetries(url, options, retryCount + 1)
+    }
+
+    return error.getResponse();
+  }
+}
 
 /**
  * Execute fetch with additional options, inlcuding retries and timeout
@@ -30,6 +86,15 @@ interface FetchOptions extends RequestInit {
  */
 export default async function fetchEnhanced(url: string, o: FetchOptions): Promise<Response> {
   const { retries = 0, timeout = 0, ...options } = o || {};
+  
   console.log('additional options', { retries, timeout });
-  return fetch(url, options);
+
+  try {
+    const [response, isAborted] = await fetchWithTimeout(url, options, timeout);
+    if (! isAborted) return response as Response;
+   
+    throw new Error('Call api timeout! Fallback to retry flow');
+  } catch (e) {
+    return fetchWithRetries(url, { maxRetries: retries, ...options });
+  }
 }
