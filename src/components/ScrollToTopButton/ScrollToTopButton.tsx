@@ -17,15 +17,9 @@ function ScrollToTopButton() {
   const [visible, setVisible] = useState(false);
 
   const toggleButtonVisibility = (e: Event) => {
-    const target = e.target as HTMLElement
-    const scrolled = target.scrollTop
-    
-    if (scrolled > 200){
-      setVisible(true)
-    } 
-    else if (scrolled <= 200){
-      setVisible(false)
-    }
+    const target = e.target as HTMLElement;
+    const scrolled = target.scrollTop;
+    setVisible(scrolled >= 200);
   };
 
   const scrollToTop = () =>{
